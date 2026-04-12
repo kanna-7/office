@@ -41,7 +41,7 @@ export default function SetupAdminPage() {
         setError(err.message);
       } else if (err instanceof TypeError && String(err.message).includes("fetch")) {
         setError(
-          "Cannot reach API. Is the server running on port 4000? If the app is on a different port than your API CORS allow-list, add it to CLIENT_ORIGIN in server/.env."
+          "Cannot reach API. Is the server running on port 7895? If the app is on a different port than your API CORS allow-list, add it to CLIENT_ORIGIN in server/.env."
         );
       } else {
         setError(err instanceof Error ? err.message : "Setup failed");

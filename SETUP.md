@@ -41,7 +41,7 @@ Edit **`server/.env`**:
 | `MONGODB_URI` | Full Mongo connection string (includes DB name) |
 | `JWT_SECRET` | Long random string for signing tokens |
 | `JWT_EXPIRES_IN` | Optional, default `7d` |
-| `PORT` | API port, default `4000` |
+| `PORT` | API port, default `7895` |
 | `CLIENT_ORIGIN` | Next.js origin for CORS, e.g. `http://localhost:3000` |
 
 Install and run:
@@ -51,7 +51,7 @@ npm install
 npm run dev
 ```
 
-Health check: `http://localhost:4000/api/health`
+Health check: `http://localhost:7895/api/health`
 
 ---
 
@@ -64,7 +64,7 @@ copy .env.example .env.local
 
 Set:
 
-`NEXT_PUBLIC_API_URL=http://localhost:4000`
+`NEXT_PUBLIC_API_URL=http://localhost:7895`
 
 ```bash
 npm install

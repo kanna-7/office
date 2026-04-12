@@ -11,24 +11,32 @@ export type StoredUser = {
   baseSalary?: number;
 };
 
-export function getToken(): string | null {
+function getStorage(): Storage | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem(TOKEN_KEY);
+  return window.sessionStorage;
+}
+
+export function getToken(): string | null {
+  const storage = getStorage();
+  return storage?.getItem(TOKEN_KEY) ?? null;
 }
 
 export function setSession(token: string, user: StoredUser) {
-  localStorage.setItem(TOKEN_KEY, token);
-  localStorage.setItem(USER_KEY, JSON.stringify(user));
+  const storage = getStorage();
+  storage?.setItem(TOKEN_KEY, token);
+  storage?.setItem(USER_KEY, JSON.stringify(user));
 }
 
 export function clearSession() {
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(USER_KEY);
+  const storage = getStorage();
+  storage?.removeItem(TOKEN_KEY);
+  storage?.removeItem(USER_KEY);
 }
 
 export function getStoredUser(): StoredUser | null {
-  if (typeof window === "undefined") return null;
-  const raw = localStorage.getItem(USER_KEY);
+  const storage = getStorage();
+  if (!storage) return null;
+  const raw = storage.getItem(USER_KEY);
   if (!raw) return null;
   try {
     return JSON.parse(raw) as StoredUser;

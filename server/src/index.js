@@ -15,7 +15,7 @@ import payslipRoutes from "./routes/payslipRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 
 const app = express();
-const port = Number(process.env.PORT) || 4000;
+const port = Number(process.env.PORT) || 7895;
 /** Comma-separated list, e.g. http://localhost:3000,http://localhost:3001 */
 const clientOrigins = (process.env.CLIENT_ORIGIN || "http://localhost:3000")
   .split(",")
