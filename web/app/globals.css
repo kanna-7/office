@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-page text-ink antialiased;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Focus rings — subtle, corporate */
+input:focus,
+textarea:focus,
+select:focus,
+button:focus-visible {
+  @apply outline-none ring-2 ring-corp-800/15 ring-offset-1 ring-offset-page;
+}
