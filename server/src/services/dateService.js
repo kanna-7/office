@@ -2,9 +2,19 @@
  * @param {string} ianaTimeZone e.g. Asia/Kolkata
  * @param {Date} date
  */
+function resolveTimeZone(ianaTimeZone) {
+  const tzMap = {
+    "India Standard Time": "Asia/Kolkata",
+    "Pacific Standard Time": "America/Los_Angeles",
+    // Add more mappings here if required.
+  };
+  return tzMap[ianaTimeZone] || ianaTimeZone;
+}
+
 export function dateKeyInTimeZone(date, ianaTimeZone) {
+  const resolvedTz = resolveTimeZone(ianaTimeZone);
   const fmt = new Intl.DateTimeFormat("en-CA", {
-    timeZone: ianaTimeZone,
+    timeZone: resolvedTz,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -35,8 +45,9 @@ export function startOfDayInTimeZone(dateKey, ianaTimeZone) {
  * Minutes since midnight local to TZ for a given instant
  */
 export function minutesSinceMidnightInTz(date, ianaTimeZone) {
+  const resolvedTz = resolveTimeZone(ianaTimeZone);
   const fmt = new Intl.DateTimeFormat("en-GB", {
-    timeZone: ianaTimeZone,
+    timeZone: resolvedTz,
     hour: "2-digit",
     minute: "2-digit",
     hourCycle: "h23",
