@@ -152,52 +152,6 @@ export default function PayslipsPage() {
     </div>
   );
 }
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight text-corp-900 sm:text-2xl">Payslips</h1>
-        <p className="mt-1 text-sm text-muted">Monthly payroll records. Download PDF or open detail view.</p>
-      </div>
-
-      <Card title="Records">
-        {rows.length === 0 && <p className="text-sm text-muted">No payroll records yet.</p>}
-        <ul className="divide-y divide-corp-100">
-          {rows.map((r) => (
-            <li
-              key={r._id}
-              className={`flex flex-col gap-3 py-4 text-sm sm:flex-row sm:items-center sm:justify-between ${
-                highlight === r._id ? "rounded-md bg-corp-50/80 -mx-2 px-2" : ""
-              }`}
-            >
-              <div>
-                <div className="font-medium text-ink">
-                  {r.year}-{String(r.month).padStart(2, "0")}
-                </div>
-                <div className="text-xs text-muted">
-                  Net {r.netSalary.toFixed(2)} · Deductions {r.totalDeductions.toFixed(2)}
-                  {r.finalized ? " · Finalized" : " · Draft"}
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant="outline"
-                  className="text-xs"
-                  onClick={() => downloadPdf(r._id).catch(() => alert("PDF download failed"))}
-                >
-                  PDF
-                </Button>
-                <a
-                  className="inline-flex items-center justify-center rounded-md border border-corp-200 bg-white px-3 py-1.5 text-xs font-medium text-corp-800 transition hover:bg-corp-50"
-                  href={`/employee/payslips/${r._id}`}
-                >
-                  View
-                </a>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </Card>
-    </div>
-  );
-}
 
 export default function PayslipsPage() {
   return (
