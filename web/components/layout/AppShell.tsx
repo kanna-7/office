@@ -56,15 +56,28 @@ export function AppShell({ role, children }: { role: Role; children: React.React
     { href: "/employee/attendance", label: "Attendance", icon: <IconAttendance className="h-5 w-5" /> },
     { href: "/employee/leaves", label: "Leaves", icon: <IconLeaves className="h-5 w-5" /> },
     { href: "/employee/salary", label: "Salary", icon: <IconSalary className="h-5 w-5" /> },
+    { href: "/employee/payslips", label: "Payslips", icon: <IconSalary className="h-5 w-5" /> },
+    { href: "/employee/documents", label: "Documents", icon: <IconSettings className="h-5 w-5" /> },
+    { href: "/employee/work-updates", label: "Work Updates", icon: <IconAttendance className="h-5 w-5" /> },
+    { href: "/employee/feedback", label: "Feedback", icon: <IconBell className="h-5 w-5" /> },
   ];
 
   const adminNav: NavItem[] = [
     { href: "/admin", label: "Dashboard", icon: <IconDashboard className="h-5 w-5" /> },
     { href: "/admin/employees", label: "Employees", icon: <IconUsers className="h-5 w-5" /> },
-    { href: "/admin/settings", label: "Settings", icon: <IconSettings className="h-5 w-5" /> },
     { href: "/admin/attendance", label: "Attendance", icon: <IconAttendance className="h-5 w-5" /> },
     { href: "/admin/leaves", label: "Leaves", icon: <IconLeaves className="h-5 w-5" /> },
     { href: "/admin/salary", label: "Payroll", icon: <IconSalary className="h-5 w-5" /> },
+    { href: "/admin/payslips", label: "Payslips", icon: <IconSalary className="h-5 w-5" /> },
+    { href: "/admin/documents", label: "Documents", icon: <IconSettings className="h-5 w-5" /> },
+    { href: "/admin/resignations", label: "Resignations", icon: <IconUsers className="h-5 w-5" /> },
+    { href: "/admin/feedback", label: "Feedback", icon: <IconBell className="h-5 w-5" /> },
+    { href: "/admin/calendar", label: "Calendar", icon: <IconAttendance className="h-5 w-5" /> },
+    { href: "/admin/notices", label: "Notices", icon: <IconBell className="h-5 w-5" /> },
+    { href: "/admin/sops", label: "SOPs", icon: <IconSettings className="h-5 w-5" /> },
+    { href: "/admin/policies", label: "Policies", icon: <IconSettings className="h-5 w-5" /> },
+    { href: "/admin/work-updates", label: "Work Updates", icon: <IconAttendance className="h-5 w-5" /> },
+    { href: "/admin/settings", label: "Settings", icon: <IconSettings className="h-5 w-5" /> },
   ];
 
   const nav = role === "admin" ? adminNav : employeeNav;

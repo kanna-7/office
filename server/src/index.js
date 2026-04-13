@@ -13,6 +13,15 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import salaryRoutes from "./routes/salaryRoutes.js";
 import payslipRoutes from "./routes/payslipRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import resignationRoutes from "./routes/resignationRoutes.js";
+import feedbackRoutes from "./routes/feedbackRoutes.js";
+import documentRoutes from "./routes/documentRoutes.js";
+import policyRoutes from "./routes/policyRoutes.js";
+import eventRoutes from "./routes/eventRoutes.js";
+import sopRoutes from "./routes/sopRoutes.js";
+import noticeRoutes from "./routes/noticeRoutes.js";
+import workUpdateRoutes from "./routes/workUpdateRoutes.js";
+import internalFeedbackRoutes from "./routes/internalFeedbackRoutes.js";
 
 const app = express();
 const port = Number(process.env.PORT) || 7895;
@@ -59,6 +68,15 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/salary", salaryRoutes);
 app.use("/api/payslips", payslipRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/resignations", resignationRoutes);
+app.use("/api/feedback", feedbackRoutes);
+app.use("/api/documents", documentRoutes);
+app.use("/api/policies", policyRoutes);
+app.use("/api/events", eventRoutes);
+app.use("/api/sops", sopRoutes);
+app.use("/api/notices", noticeRoutes);
+app.use("/api/work-updates", workUpdateRoutes);
+app.use("/api/internal-feedback", internalFeedbackRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);
