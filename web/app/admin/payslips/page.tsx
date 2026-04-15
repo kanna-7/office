@@ -11,6 +11,7 @@ interface User {
   name: string;
   email: string;
   baseSalary: number;
+  role: string;
 }
 
 interface Payslip {

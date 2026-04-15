@@ -26,6 +26,7 @@ export default function AdminDocumentsPage() {
 
   useEffect(() => {
     loadDocuments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   const loadDocuments = async () => {
