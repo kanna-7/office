@@ -152,11 +152,3 @@ export default function PayslipsPage() {
     </div>
   );
 }
-
-export default function PayslipsPage() {
-  return (
-    <Suspense fallback={<p className="text-sm text-muted">Loading…</p>}>
-      <PayslipsInner />
-    </Suspense>
-  );
-}

@@ -35,8 +35,9 @@ export default function AdminDocumentsPage() {
         if (value) params.append(key, value);
       });
 
-      const response = await api.get(`/documents?${params}`);
-      setDocuments(response.data.documents);
+      const response = await api.get<any>(`/api/documents?${params}`);
+      // Backend returns { documents: [...], pagination: {...} }
+      setDocuments(response.documents || []);
     } catch (error) {
       console.error("Failed to load documents:", error);
     } finally {
@@ -46,7 +47,7 @@ export default function AdminDocumentsPage() {
 
   const handleVerify = async (id: string) => {
     try {
-      await api.patch(`/documents/${id}/verify`);
+      await api.patch(`/api/documents/${id}/verify`);
       await loadDocuments();
     } catch (error: any) {
       alert(error.response?.data?.message || "Failed to verify document");
@@ -55,11 +56,11 @@ export default function AdminDocumentsPage() {
 
   const handleDownload = async (id: string, fileName: string) => {
     try {
-      const response = await api.get(`/documents/download/${id}`, {
+      const blob = await api.get<Blob>(`/api/documents/download/${id}`, {
         responseType: "blob",
       });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute("download", fileName);

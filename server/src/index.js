@@ -24,7 +24,7 @@ import workUpdateRoutes from "./routes/workUpdateRoutes.js";
 import internalFeedbackRoutes from "./routes/internalFeedbackRoutes.js";
 
 const app = express();
-const port = Number(process.env.PORT) || 7895;
+const port = Number(process.env.PORT) || 7896;
 /** Comma-separated list, e.g. http://localhost:3000,http://localhost:3001 */
 const clientOrigins = (process.env.CLIENT_ORIGIN || "http://localhost:3000")
   .split(",")

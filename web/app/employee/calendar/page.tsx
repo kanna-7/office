@@ -40,6 +40,15 @@ function getCalendarDays(date: Date) {
   return days;
 }
 
+function localDateKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+/** Extract YYYY-MM-DD from a UTC ISO string (avoids timezone shift) */
+function utcDateKey(isoString: string) {
+  return isoString.slice(0, 10);
+}
+
 export default function EmployeeCalendarPage() {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +63,7 @@ export default function EmployeeCalendarPage() {
 
   const loadEvents = async () => {
     try {
-      const response = await api<EventItem[]>('/events');
+      const response = await api<EventItem[]>('/api/events');
       setEvents(response);
     } catch (error) {
       console.error('Could not load events', error);
@@ -95,12 +104,12 @@ export default function EmployeeCalendarPage() {
   };
 
   const monthEvents = useMemo(() => {
+    const cm = currentMonth.getFullYear();
+    const mm = currentMonth.getMonth() + 1;
     return events.filter((event) => {
-      const eventDate = new Date(event.date);
-      return (
-        eventDate.getFullYear() === currentMonth.getFullYear() &&
-        eventDate.getMonth() === currentMonth.getMonth()
-      );
+      const key = utcDateKey(event.date);
+      const [year, month] = key.split("-").map(Number);
+      return year === cm && month === mm;
     });
   }, [events, currentMonth]);
 
@@ -139,8 +148,8 @@ export default function EmployeeCalendarPage() {
           </div>
           <div className="grid grid-cols-7 gap-2 mt-2">
             {calendarDays.map((day, index) => {
-              const dateString = day ? day.toISOString().slice(0, 10) : '';
-              const eventCount = day ? monthEvents.filter((event) => event.date.slice(0, 10) === dateString).length : 0;
+              const dateString = day ? localDateKey(day) : "";
+              const eventCount = day ? monthEvents.filter((event) => utcDateKey(event.date) === dateString).length : 0;
               return (
                 <div
                   key={`${index}-${dateString}`}
@@ -168,7 +177,7 @@ export default function EmployeeCalendarPage() {
               {monthEvents.map((event) => (
                 <div key={event._id} className="rounded-xl border bg-slate-50 p-4">
                   <p className="font-semibold">{event.title}</p>
-                  <p className="text-xs text-corp-500">{new Date(event.date).toLocaleDateString()}</p>
+                  <p className="text-xs text-corp-500">{utcDateKey(event.date)}</p>
                   <p className="mt-2 text-sm text-corp-600">{event.description}</p>
                 </div>
               ))}
@@ -207,7 +216,7 @@ export default function EmployeeCalendarPage() {
               <div key={item.id} className="rounded-xl border bg-white p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="font-semibold">{new Date(item.date).toLocaleDateString()}</p>
+                    <p className="font-semibold">{new Date(item.date + "T00:00:00").toLocaleDateString()}</p>
                     <p className="mt-1 text-sm text-corp-600">{item.note}</p>
                   </div>
                   <button

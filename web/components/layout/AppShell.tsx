@@ -58,6 +58,7 @@ export function AppShell({ role, children }: { role: Role; children: React.React
     { href: "/employee/salary", label: "Salary", icon: <IconSalary className="h-5 w-5" /> },
     { href: "/employee/payslips", label: "Payslips", icon: <IconSalary className="h-5 w-5" /> },
     { href: "/employee/documents", label: "Documents", icon: <IconSettings className="h-5 w-5" /> },
+    { href: "/employee/calendar", label: "Calendar", icon: <IconLeaves className="h-5 w-5" /> },
     { href: "/employee/work-updates", label: "Work Updates", icon: <IconAttendance className="h-5 w-5" /> },
     { href: "/employee/feedback", label: "Feedback", icon: <IconBell className="h-5 w-5" /> },
   ];

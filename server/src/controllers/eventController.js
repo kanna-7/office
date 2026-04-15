@@ -9,7 +9,9 @@ export const getEvents = async (req, res) => {
     if (type) query.type = type;
     if (year) {
       const start = new Date(year, month ? month - 1 : 0, 1);
-      const end = new Date(year, month ? month : 12, month ? 31 : 31);
+      const end = month
+        ? new Date(year, month, 0, 23, 59, 59, 999)
+        : new Date(year, 11, 31, 23, 59, 59, 999);
       query.date = { $gte: start, $lte: end };
     }
 
@@ -38,10 +40,11 @@ export const createEvent = [
 
       const { title, description, date, type } = req.body;
 
+      // Use UTC midnight so the stored ISO date matches the intended calendar date
       const event = new Event({
         title,
         description,
-        date: new Date(date),
+        date: new Date(date + "T00:00:00.000Z"),
         type,
         createdBy: req.user._id,
       });
@@ -71,7 +74,9 @@ export const updateEvent = [
       const { id } = req.params;
       const updates = req.body;
 
-      if (updates.date) updates.date = new Date(updates.date);
+      if (updates.date) {
+        updates.date = new Date(updates.date + "T00:00:00.000Z");
+      }
 
       const event = await Event.findByIdAndUpdate(id, updates, { new: true });
       if (!event) {

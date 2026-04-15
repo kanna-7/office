@@ -1,17 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Card } from "@/components/ui/Card";
-import { api } from "@/lib/api";
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Card } from '@/components/ui/Card';
+import { api } from '@/lib/api';
+
+interface ResignationData {
+  reason: string;
+  lastWorkingDay: string;
+  status: string;
+  feedback?: string;
+  adminComment?: string;
+}
 
 export default function ResignationPage() {
-  const [resignation, setResignation] = useState<any>(null);
+  const [resignation, setResignation] = useState<ResignationData | null>(null);
   const [formData, setFormData] = useState({
-    reason: "",
-    lastWorkingDay: "",
-    feedback: "",
+    reason: '',
+    lastWorkingDay: '',
+    feedback: '',
   });
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -23,8 +31,8 @@ export default function ResignationPage() {
   const loadResignation = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/resignations/my");
-      setResignation(response.data);
+      const response = await api.get('/api/resignations/my');
+      setResignation(response);
     } catch (error) {
       // No resignation found, that's ok
     } finally {
@@ -36,11 +44,11 @@ export default function ResignationPage() {
     e.preventDefault();
     try {
       setSubmitting(true);
-      await api.post("/resignations", formData);
+      await api.post('/api/resignations', formData);
       await loadResignation();
-      setFormData({ reason: "", lastWorkingDay: "", feedback: "" });
+      setFormData({ reason: '', lastWorkingDay: '', feedback: '' });
     } catch (error: any) {
-      alert(error.response?.data?.message || "Failed to submit resignation");
+      alert(error.response?.data?.message || 'Failed to submit resignation');
     } finally {
       setSubmitting(false);
     }
@@ -61,9 +69,9 @@ export default function ResignationPage() {
             <p><strong>Reason:</strong> {resignation.reason}</p>
             <p><strong>Last Working Day:</strong> {new Date(resignation.lastWorkingDay).toLocaleDateString()}</p>
             <p><strong>Status:</strong> <span className={`px-2 py-1 rounded text-sm ${
-              resignation.status === "pending" ? "bg-yellow-100 text-yellow-800" :
-              resignation.status === "approved" ? "bg-green-100 text-green-800" :
-              "bg-red-100 text-red-800"
+              resignation.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+              resignation.status === 'approved' ? 'bg-green-100 text-green-800' :
+              'bg-red-100 text-red-800'
             }`}>{resignation.status}</span></p>
             {resignation.feedback && <p><strong>Feedback:</strong> {resignation.feedback}</p>}
             {resignation.adminComment && <p><strong>Admin Comment:</strong> {resignation.adminComment}</p>}
@@ -105,7 +113,7 @@ export default function ResignationPage() {
             </div>
 
             <Button type="submit" disabled={submitting}>
-              {submitting ? "Submitting..." : "Submit Resignation"}
+              {submitting ? 'Submitting...' : 'Submit Resignation'}
             </Button>
           </form>
         </Card>

@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
-const apiTarget = process.env.API_PROXY_TARGET || "http://127.0.0.1:7896";
+let apiTarget = process.env.API_PROXY_TARGET || 'http://127.0.0.1:7896';
+if (apiTarget.includes('your-backend-domain.com')) {
+apiTarget = 'http://127.0.0.1:7896';
+}
 
 const nextConfig = {
   reactStrictMode: true,
@@ -7,7 +10,7 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: "/api/:path*",
+        source: '/api/:path*',
         destination: `${apiTarget}/api/:path*`,
       },
     ];

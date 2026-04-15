@@ -25,8 +25,9 @@ export default function DocumentsPage() {
 
   const loadDocuments = async () => {
     try {
-      const response = await api.get("/documents/my");
-      setDocuments(response.data);
+      const response = await api.get<Document[]>("/api/documents/my");
+      // Backend returns the array directly
+      setDocuments(Array.isArray(response) ? response : []);
     } catch (error) {
       console.error("Failed to load documents:", error);
     } finally {
@@ -40,14 +41,22 @@ export default function DocumentsPage() {
 
     try {
       setUploading(true);
-      await api.post("/documents/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      // Send FormData directly via fetch to avoid api helper JSON.stringify issues
+      const token = typeof window !== "undefined" ? window.sessionStorage.getItem("office_portal_token") : null;
+      const res = await fetch("/api/documents/upload", {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.message || "Upload failed");
+      }
       await loadDocuments();
       setSelectedType("");
       (e.target as HTMLFormElement).reset();
     } catch (error: any) {
-      alert(error.response?.data?.message || "Failed to upload document");
+      alert(error.message || "Failed to upload document");
     } finally {
       setUploading(false);
     }
@@ -55,11 +64,11 @@ export default function DocumentsPage() {
 
   const handleDownload = async (id: string, fileName: string) => {
     try {
-      const response = await api.get(`/documents/download/${id}`, {
+      const blob = await api.get(`/api/documents/download/${id}`, {
         responseType: "blob",
       });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute("download", fileName);
@@ -75,7 +84,7 @@ export default function DocumentsPage() {
     if (!confirm("Are you sure you want to delete this document?")) return;
 
     try {
-      await api.delete(`/documents/${id}`);
+      await api.delete(`/api/documents/${id}`);
       await loadDocuments();
     } catch (error: any) {
       alert(error.response?.data?.message || "Failed to delete document");

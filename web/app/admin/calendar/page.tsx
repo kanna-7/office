@@ -32,6 +32,15 @@ function getCalendarDays(date: Date) {
   return days;
 }
 
+function localDateKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+/** Extract YYYY-MM-DD from a UTC ISO string (avoids timezone shift) */
+function utcDateKey(isoString: string) {
+  return isoString.slice(0, 10);
+}
+
 export default function AdminCalendarPage() {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +54,7 @@ export default function AdminCalendarPage() {
 
   const loadEvents = async () => {
     try {
-      const response = await api<EventItem[]>('/events');
+      const response = await api<EventItem[]>('/api/events');
       setEvents(response);
     } catch (error) {
       console.error('Could not load events', error);
@@ -59,7 +68,7 @@ export default function AdminCalendarPage() {
     if (!form.title || !form.date) return;
     try {
       setSubmitting(true);
-      await api('/events', {
+      await api('/api/events', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
@@ -76,7 +85,7 @@ export default function AdminCalendarPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this event?')) return;
     try {
-      await api(`/events/${id}`, { method: 'DELETE' });
+      await api(`/api/events/${id}`, { method: 'DELETE' });
       await loadEvents();
     } catch (error) {
       console.error('Could not delete event', error);
@@ -84,12 +93,12 @@ export default function AdminCalendarPage() {
   };
 
   const monthEvents = useMemo(() => {
+    const cm = currentMonth.getFullYear();
+    const mm = currentMonth.getMonth() + 1;
     return events.filter((event) => {
-      const eventDate = new Date(event.date);
-      return (
-        eventDate.getFullYear() === currentMonth.getFullYear() &&
-        eventDate.getMonth() === currentMonth.getMonth()
-      );
+      const key = utcDateKey(event.date);
+      const [year, month] = key.split("-").map(Number);
+      return year === cm && month === mm;
     });
   }, [events, currentMonth]);
 
@@ -128,8 +137,8 @@ export default function AdminCalendarPage() {
           </div>
           <div className="grid grid-cols-7 gap-2 mt-2">
             {calendarDays.map((day, index) => {
-              const dateString = day ? day.toISOString().slice(0, 10) : '';
-              const count = day ? monthEvents.filter((event) => event.date.slice(0, 10) === dateString).length : 0;
+              const dateString = day ? localDateKey(day) : "";
+              const count = day ? monthEvents.filter((event) => utcDateKey(event.date) === dateString).length : 0;
               return (
                 <div
                   key={`${index}-${dateString}`}
@@ -196,7 +205,7 @@ export default function AdminCalendarPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-semibold">{event.title}</p>
-                      <p className="text-xs text-corp-500">{new Date(event.date).toLocaleDateString()}</p>
+                      <p className="text-xs text-corp-500">{utcDateKey(event.date)}</p>
                     </div>
                     <button
                       type="button"

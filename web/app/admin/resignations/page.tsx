@@ -14,25 +14,38 @@ interface Resignation {
   status: string;
   adminComment: string;
   createdAt: string;
+  decidedAt?: string;
+  decidedBy?: { name: string };
 }
+
+const statusOptions = [
+  { value: "", label: "All statuses" },
+  { value: "pending", label: "Pending" },
+  { value: "approved", label: "Approved" },
+  { value: "rejected", label: "Rejected" },
+];
 
 export default function AdminResignationsPage() {
   const [resignations, setResignations] = useState<Resignation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("");
   const [selectedResignation, setSelectedResignation] = useState<Resignation | null>(null);
   const [adminComment, setAdminComment] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     loadResignations();
-  }, []);
+  }, [filter]);
 
   const loadResignations = async () => {
     try {
-      const response = await api.get("/resignations");
-      setResignations(response.data.resignations);
+      setLoading(true);
+      const query = filter ? `?status=${encodeURIComponent(filter)}` : "";
+      const response = await api.get(`/api/resignations${query}`);
+      setResignations(response.resignations);
     } catch (error) {
       console.error("Failed to load resignations:", error);
+      setResignations([]);
     } finally {
       setLoading(false);
     }
@@ -41,7 +54,7 @@ export default function AdminResignationsPage() {
   const handleStatusUpdate = async (id: string, status: string) => {
     try {
       setActionLoading(true);
-      await api.patch(`/resignations/${id}/status`, {
+      await api.patch(`/api/resignations/${id}/status`, {
         status,
         adminComment: adminComment.trim(),
       });
@@ -49,10 +62,15 @@ export default function AdminResignationsPage() {
       setSelectedResignation(null);
       setAdminComment("");
     } catch (error: any) {
-      alert(error.response?.data?.message || "Failed to update status");
+      alert(error.response?.message || error.message || "Failed to update status");
     } finally {
       setActionLoading(false);
     }
+  };
+
+  const openReviewModal = (resignation: Resignation) => {
+    setSelectedResignation(resignation);
+    setAdminComment(resignation.adminComment || "");
   };
 
   if (loading) {
@@ -61,9 +79,37 @@ export default function AdminResignationsPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Resignation Management</h1>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Resignation Management</h1>
+          <p className="text-sm text-gray-600 mt-1">Review resignation requests and update approval status.</p>
+        </div>
 
-      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <label htmlFor="status" className="text-sm font-medium text-gray-700">
+            Filter:
+          </label>
+          <select
+            id="status"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+          >
+            {statusOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {resignations.length === 0 ? (
+        <Card className="p-6">
+          <p className="text-sm text-gray-600">No resignation requests found for the selected filter.</p>
+        </Card>
+      ) : (
+        <div className="space-y-4">
         {resignations.map((resignation) => (
           <Card key={resignation._id} className="p-6">
             <div className="flex justify-between items-start mb-4">
@@ -83,17 +129,37 @@ export default function AdminResignationsPage() {
               </span>
             </div>
 
-            <div className="space-y-2 mb-4">
-              <p><strong>Reason:</strong> {resignation.reason}</p>
-              <p><strong>Last Working Day:</strong> {new Date(resignation.lastWorkingDay).toLocaleDateString()}</p>
-              {resignation.feedback && <p><strong>Feedback:</strong> {resignation.feedback}</p>}
-              {resignation.adminComment && <p><strong>Admin Comment:</strong> {resignation.adminComment}</p>}
+            <div className="grid gap-3 sm:grid-cols-2 mb-4 text-sm text-gray-700">
+              <div>
+                <p className="font-medium">Last Working Day</p>
+                <p>{new Date(resignation.lastWorkingDay).toLocaleDateString()}</p>
+              </div>
+              <div>
+                <p className="font-medium">Reason</p>
+                <p>{resignation.reason}</p>
+              </div>
             </div>
+
+            {resignation.feedback && (
+              <p className="mb-2 text-sm">
+                <strong>Feedback:</strong> {resignation.feedback}
+              </p>
+            )}
+            {resignation.adminComment && (
+              <p className="mb-2 text-sm">
+                <strong>Admin Comment:</strong> {resignation.adminComment}
+              </p>
+            )}
+            {resignation.decidedBy?.name && resignation.decidedAt && (
+              <p className="mb-2 text-sm text-gray-500">
+                Decided by {resignation.decidedBy.name} on {new Date(resignation.decidedAt).toLocaleDateString()}
+              </p>
+            )}
 
             {resignation.status === "pending" && (
               <div className="flex gap-2">
                 <Button
-                  onClick={() => setSelectedResignation(resignation)}
+                  onClick={() => openReviewModal(resignation)}
                   variant="outline"
                 >
                   Review
@@ -103,6 +169,7 @@ export default function AdminResignationsPage() {
           </Card>
         ))}
       </div>
+      )}
 
       {selectedResignation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
